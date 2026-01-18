@@ -256,9 +256,18 @@
                             <input type="radio" name="payment_method" value="استلام الطلب من المحل" class="w-5 h-5 accent-green-600">
                             <span class="theme-text-body font-medium">استلام الطلب من المحل (مجاني)</span>
                         </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 rounded">
+                            <input type="radio" name="payment_method" value="طلب من الصالة" class="w-5 h-5 accent-green-600">
+                            <span class="theme-text-body font-medium">طلب من الصالة (داخل المحل)</span>
+                        </label>
                     </div>
+                    
                     <div id="addressFields">
                         <input type="text" id="popAddress" placeholder="العنوان بالتفصيل" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
+                    </div>
+                    
+                    <div id="tableFields" class="hidden">
+                        <input type="number" id="popTable" placeholder="أدخل رقم الطاولة*" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
                     </div>
                 </fieldset>
 
@@ -281,12 +290,13 @@
     <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-xl z-[150] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] text-sm font-bold">تمت الإضافة ✅</div>
 
     <script>
+        const SHOP_NAME = 'NOUR MENU'; // اسم المحل
         const SHOP_NUMBER = '201224268026';
         const ADMIN_EMAIL = 'Haythamnour0@GMAIL.COM';
         const DELIVERY_FEE = 15;
         const SERVICE_FEE = 1;
         
-        let currentOrderType = 'delivery';
+        let currentOrderType = 'delivery'; // 'delivery', 'pickup', 'dinein'
         let cart = JSON.parse(localStorage.getItem('NOUR MENU_cart')) || [];
         let itemToProcess = null;
         let discountPercent = 0;
@@ -307,14 +317,35 @@
             if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
             setTimeout(() => { document.getElementById('app-splash').style.opacity = '0'; setTimeout(() => { document.getElementById('app-splash').style.display = 'none'; }, 500); }, 2000);
             renderCart();
+            
+            // مراقبة تغيير نوع الطلب
             document.querySelectorAll('input[name="payment_method"]').forEach(r => {
                 r.addEventListener('change', e => {
-                    currentOrderType = (e.target.value === 'توصيل الطلب') ? 'delivery' : 'pickup';
+                    if (e.target.value === 'توصيل الطلب') {
+                        currentOrderType = 'delivery';
+                    } else if (e.target.value === 'طلب من الصالة') {
+                        currentOrderType = 'dinein';
+                    } else {
+                        currentOrderType = 'pickup';
+                    }
+                    
+                    // إظهار وإخفاء الحقول بناءً على الاختيار
                     document.getElementById('addressFields').classList.toggle('hidden', currentOrderType !== 'delivery');
+                    document.getElementById('tableFields').classList.toggle('hidden', currentOrderType !== 'dinein');
+                    
                     renderCart();
                 });
             });
         };
+
+        function generateOrderID() {
+            const now = new Date();
+            const dateStr = now.getFullYear().toString() + 
+                            (now.getMonth() + 1).toString().padStart(2, '0') + 
+                            now.getDate().toString().padStart(2, '0');
+            const uniquePart = Math.floor(1000 + Math.random() * 9000); // 4 أرقام عشوائية
+            return `ORD-${dateStr}-${uniquePart}`;
+        }
 
         function applyCoupon() {
             const input = document.getElementById('couponInput').value.trim().toLowerCase();
@@ -376,21 +407,33 @@
             const name = document.getElementById('popName').value.trim();
             const phone = document.getElementById('popPhone').value.trim();
             const address = document.getElementById('popAddress').value.trim();
-            if(!name || !phone || (currentOrderType === 'delivery' && !address)) return alert('برجاء إكمال البيانات');
+            const tableNum = document.getElementById('popTable').value.trim();
 
+            if(!name || !phone) return alert('برجاء إدخال الاسم ورقم الهاتف');
+            if(currentOrderType === 'delivery' && !address) return alert('برجاء إدخال العنوان');
+            if(currentOrderType === 'dinein' && !tableNum) return alert('برجاء إدخال رقم الطاولة');
+
+            const orderID = generateOrderID();
             const subtotal = cart.reduce((a,b)=>a+(b.price*b.qty),0);
             const discountAmount = Math.round(subtotal * discountPercent);
             let total = (subtotal - discountAmount) + SERVICE_FEE;
             if(currentOrderType === 'delivery') total += DELIVERY_FEE;
 
-            let msg = `📋 *طلب جديد*\n`;
+            let typeLabel = '';
+            if(currentOrderType === 'delivery') typeLabel = `🛵 توصيل للمنزل (${address})`;
+            else if(currentOrderType === 'dinein') typeLabel = `🍽️ طلب صالة - طاولة رقم: ${tableNum}`;
+            else typeLabel = `🛍️ استلام من المحل`;
+
+            let msg = `🏪 *${SHOP_NAME}*\n`;
+            msg += `📄 *رقم الطلب:* ${orderID}\n`;
+            msg += `------------------\n`;
             msg += `👤 *العميل:* ${name}\n📱 *الهاتف:* ${phone}\n`;
-            msg += `🛵 *النوع:* ${currentOrderType === 'delivery' ? 'توصيل ('+address+')' : 'استلام من المحل'}\n`;
-            msg += `------------------\n*الطلبات:*\n`;
+            msg += `📍 *النوع:* ${typeLabel}\n`;
+            msg += `------------------\n*الأصناف:*\n`;
             cart.forEach(i => msg += `- ${i.qty} x ${i.name} (${i.optionName}) = ${i.price * i.qty}ج\n`);
             msg += `------------------\n`;
             msg += `*المجموع:* ${subtotal} ج\n`;
-            if(discountAmount > 0) msg += `*كود الخصم (${appliedCoupon}):* -${discountAmount} ج (10%)\n`;
+            if(discountAmount > 0) msg += `*خصم (${appliedCoupon}):* -${discountAmount} ج\n`;
             if(currentOrderType === 'delivery') msg += `*التوصيل:* ${DELIVERY_FEE} ج\n`;
             msg += `*الإجمالي النهائي:* ${total} ج`;
 
