@@ -25,6 +25,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* أنماط التنسيق الأصلية */
         * { -webkit-tap-highlight-color: transparent; }
         body {
             font-family: 'Cairo', 'Inter', sans-serif;
@@ -70,8 +71,7 @@
         .theme-border { border-color: var(--border-color); }
 
         .glass { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); }
-        .items-carousel { display: grid; gap: 1rem; padding-bottom: 6rem; }
-        .items-carousel { grid-template-columns: 1fr; }
+        .items-carousel { display: grid; gap: 1rem; padding-bottom: 6rem; grid-template-columns: 1fr; }
         @media(min-width: 640px) { .items-carousel { grid-template-columns: repeat(2, 1fr); } }
         @media(min-width: 1024px) { .items-carousel { grid-template-columns: repeat(3, 1fr); } }
 
@@ -185,7 +185,6 @@
                 </div>
             </div>
         </header>
-
         <main class="max-w-4xl mx-auto mt-20 px-4 pb-10">
             <div id="categoriesViewOnly" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
             <div id="itemsAreaOnly" class="hidden">
@@ -215,12 +214,10 @@
     <div id="checkoutModal" class="fixed inset-0 z-[100] hidden">
         <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeCheckoutModal()"></div>
         <div class="absolute inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 bg-white dark:bg-gray-800 sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[90vh] overflow-y-auto w-full sm:max-w-md transition-transform duration-300 transform translate-y-full sm:translate-y-0" id="modalPanel">
-            
             <div class="bg-[#6b3e26] dark:bg-pink-600 text-white p-4 flex items-center justify-between sticky top-0 z-10">
                 <h3 class="font-bold text-lg">بيانات الطلب والدفع</h3>
                 <button onclick="closeCheckoutModal()" class="text-white/80 hover:text-white text-2xl font-bold">&times;</button>
             </div>
-
             <div class="p-5 space-y-6">
                 <div id="cartList" class="space-y-3 min-h-[50px] max-h-[150px] overflow-y-auto bg-gray-50 dark:bg-gray-900/50 p-2 rounded-lg"></div>
 
@@ -233,31 +230,46 @@
                     <p id="couponMsg" class="text-[10px] mt-1 font-bold"></p>
                 </div>
 
-                <div id="clearCartContainer">
-                    <button onclick="clearCart()" class="w-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold py-2 rounded-lg text-sm border border-red-300 dark:border-red-800 hover:bg-red-200 transition-colors">
-                        <i class="fas fa-trash-alt ml-2"></i> مسح السلة بالكامل
-                    </button>
-                </div>
-
                 <fieldset class="border border-gray-200 dark:border-gray-700 p-4 rounded-xl space-y-4">
                     <legend class="text-base font-bold text-[var(--header-color)] px-2 theme-text-header">معلومات العميل</legend>
                     <input type="text" id="popName" placeholder="الاسم ثلاثي*" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
                     <input type="tel" id="popPhone" placeholder="رقم الهاتف للتواصل*" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
                 </fieldset>
-                
+
+                <fieldset class="border border-gray-200 dark:border-gray-700 p-4 rounded-xl space-y-3">
+                    <legend class="text-base font-bold text-[var(--header-color)] px-2 theme-text-header">طريقة الدفع</legend>
+                    <div class="grid grid-cols-1 gap-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 border rounded-lg theme-border">
+                            <input type="radio" name="payment_method_type" value="كاش" checked onclick="togglePaymentInfo('cash')" class="w-5 h-5 accent-green-600">
+                            <span class="theme-text-body font-medium">💵 كاش (عند الاستلام)</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 border rounded-lg theme-border">
+                            <input type="radio" name="payment_method_type" value="محفظة إلكترونية" onclick="togglePaymentInfo('wallet')" class="w-5 h-5 accent-green-600">
+                            <span class="theme-text-body font-medium">📱 محفظة (01558090199)</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 border rounded-lg theme-border">
+                            <input type="radio" name="payment_method_type" value="انستاباي" onclick="togglePaymentInfo('instapay')" class="w-5 h-5 accent-green-600">
+                            <span class="theme-text-body font-medium">💸 انستاباي (01224268026)</span>
+                        </label>
+                    </div>
+                    <div id="paymentInstructions" class="hidden text-[11px] bg-orange-50 p-2 rounded border border-orange-200 text-orange-800">
+                        يرجى تحويل المبلغ الموضح أدناه ثم إرسال الطلب.
+                    </div>
+                </fieldset>
+
                 <fieldset class="border border-gray-200 dark:border-gray-700 p-4 rounded-xl space-y-3">
                     <legend class="text-base font-bold text-[var(--header-color)] px-2 theme-text-header">نوع الطلب</legend>
                     <div class="space-y-2">
                         <label class="flex items-center gap-3 cursor-pointer p-2 rounded">
-                            <input type="radio" name="payment_method" value="توصيل الطلب" checked class="w-5 h-5 accent-green-600">
+                            <input type="radio" name="order_type" value="توصيل الطلب" checked onclick="updateOrderType('delivery')" class="w-5 h-5 accent-green-600">
                             <span class="theme-text-body font-medium">توصيل الطلب للمنزل (15 ج)</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer p-2 rounded">
-                            <input type="radio" name="payment_method" value="استلام الطلب من المحل" class="w-5 h-5 accent-green-600">
+                            <input type="radio" name="order_type" value="استلام الطلب من المحل" onclick="updateOrderType('pickup')" class="w-5 h-5 accent-green-600">
                             <span class="theme-text-body font-medium">استلام الطلب من المحل (مجاني)</span>
                         </label>
                         <label class="flex items-center gap-3 cursor-pointer p-2 rounded">
-                            <input type="radio" name="payment_method" value="طلب من الصالة" class="w-5 h-5 accent-green-600">
+                            <input type="radio" name="order_type" value="طلب من الصالة" onclick="updateOrderType('dinein')" class="w-5 h-5 accent-green-600">
                             <span class="theme-text-body font-medium">طلب من الصالة (داخل المحل)</span>
                         </label>
                     </div>
@@ -265,7 +277,6 @@
                     <div id="addressFields">
                         <input type="text" id="popAddress" placeholder="العنوان بالتفصيل" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
                     </div>
-                    
                     <div id="tableFields" class="hidden">
                         <input type="number" id="popTable" placeholder="أدخل رقم الطاولة*" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
                     </div>
@@ -281,7 +292,7 @@
                 </div>
 
                 <button onclick="processOrder()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl flex items-center justify-center gap-2">
-                    <i class="fab fa-whatsapp text-2xl"></i> إرسال الطلب
+                    <i class="fab fa-whatsapp text-2xl"></i> إرسال الطلب عبر واتساب
                 </button>
             </div>
         </div>
@@ -290,17 +301,17 @@
     <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-xl z-[150] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] text-sm font-bold">تمت الإضافة ✅</div>
 
     <script>
-        const SHOP_NAME = 'NOUR MENU'; // اسم المحل
+        const SHOP_NAME = 'NOUR MENU';
         const SHOP_NUMBER = '201224268026';
-        const ADMIN_EMAIL = 'Haythamnour0@GMAIL.COM';
         const DELIVERY_FEE = 15;
         const SERVICE_FEE = 1;
         
-        let currentOrderType = 'delivery'; // 'delivery', 'pickup', 'dinein'
+        let currentOrderType = 'delivery';
         let cart = JSON.parse(localStorage.getItem('NOUR MENU_cart')) || [];
         let itemToProcess = null;
         let discountPercent = 0;
         let appliedCoupon = '';
+        let selectedOptionId = null;
 
         const menuItems = [
             { id: 101, name: "مناقيش زعتر", desc: "زعتر وزيت زيتون فاخر", category:"فطائر", img: "https://nour2030.neocities.org/NOUR%20Menu/mn2esh.jpg", options: [{ option_id: 1, name: "صغير", price: 30 }, { option_id: 2, name: "كبير", price: 45 }] },
@@ -315,48 +326,40 @@
 
         window.onload = () => {
             if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
-            setTimeout(() => { document.getElementById('app-splash').style.opacity = '0'; setTimeout(() => { document.getElementById('app-splash').style.display = 'none'; }, 500); }, 2000);
+            setTimeout(() => { 
+                document.getElementById('app-splash').style.opacity = '0'; 
+                setTimeout(() => { document.getElementById('app-splash').style.display = 'none'; }, 500); 
+            }, 2000);
             renderCart();
-            
-            // مراقبة تغيير نوع الطلب
-            document.querySelectorAll('input[name="payment_method"]').forEach(r => {
-                r.addEventListener('change', e => {
-                    if (e.target.value === 'توصيل الطلب') {
-                        currentOrderType = 'delivery';
-                    } else if (e.target.value === 'طلب من الصالة') {
-                        currentOrderType = 'dinein';
-                    } else {
-                        currentOrderType = 'pickup';
-                    }
-                    
-                    // إظهار وإخفاء الحقول بناءً على الاختيار
-                    document.getElementById('addressFields').classList.toggle('hidden', currentOrderType !== 'delivery');
-                    document.getElementById('tableFields').classList.toggle('hidden', currentOrderType !== 'dinein');
-                    
-                    renderCart();
-                });
-            });
         };
+
+        function updateOrderType(type) {
+            currentOrderType = type;
+            document.getElementById('addressFields').classList.toggle('hidden', type !== 'delivery');
+            document.getElementById('tableFields').classList.toggle('hidden', type !== 'dinein');
+            renderCart();
+        }
+
+        function togglePaymentInfo(mode) {
+            const info = document.getElementById('paymentInstructions');
+            if (mode === 'cash') info.classList.add('hidden');
+            else info.classList.remove('hidden');
+        }
 
         function generateOrderID() {
             const now = new Date();
-            const dateStr = now.getFullYear().toString() + 
-                            (now.getMonth() + 1).toString().padStart(2, '0') + 
-                            now.getDate().toString().padStart(2, '0');
-            const uniquePart = Math.floor(1000 + Math.random() * 9000); // 4 أرقام عشوائية
-            return `ORD-${dateStr}-${uniquePart}`;
+            const dateStr = now.getFullYear().toString() + (now.getMonth() + 1).toString().padStart(2, '0') + now.getDate().toString().padStart(2, '0');
+            return `ORD-${dateStr}-${Math.floor(1000 + Math.random() * 9000)}`;
         }
 
         function applyCoupon() {
             const input = document.getElementById('couponInput').value.trim().toLowerCase();
             const msg = document.getElementById('couponMsg');
-            
             if(input === 'haytham') {
-                discountPercent = 0.10; // 10%
+                discountPercent = 0.10;
                 appliedCoupon = 'haytham';
                 msg.textContent = "تم تطبيق خصم 10% ✅";
                 msg.className = "text-[10px] mt-1 font-bold text-green-600";
-                showToast("مبروك! حصلت على خصم 10%");
             } else {
                 discountPercent = 0;
                 appliedCoupon = '';
@@ -373,7 +376,9 @@
             if (currentOrderType === 'delivery') total += DELIVERY_FEE;
 
             const miniCart = document.getElementById('miniCart');
-            if(cart.length > 0) miniCart.classList.remove('translate-y-24'); else miniCart.classList.add('translate-y-24');
+            if(cart.length > 0) miniCart.classList.remove('translate-y-24');
+            else miniCart.classList.add('translate-y-24');
+
             document.getElementById('miniCartCount').textContent = cart.reduce((a,b) => a + b.qty, 0);
             document.getElementById('miniCartTotal').textContent = total + ' ج';
 
@@ -396,10 +401,8 @@
             const discEl = document.getElementById('discountDisplay');
             if(discountAmount > 0) {
                 discEl.classList.remove('hidden');
-                document.getElementById('discountVal').textContent = `- ${discountAmount} ج`;
-            } else {
-                discEl.classList.add('hidden');
-            }
+                document.getElementById('discountVal').textContent = `-${discountAmount} ج`;
+            } else { discEl.classList.add('hidden'); }
             document.getElementById('deliveryFeeDisplay').classList.toggle('hidden', currentOrderType !== 'delivery');
         }
 
@@ -408,6 +411,7 @@
             const phone = document.getElementById('popPhone').value.trim();
             const address = document.getElementById('popAddress').value.trim();
             const tableNum = document.getElementById('popTable').value.trim();
+            const payMethod = document.querySelector('input[name="payment_method_type"]:checked').value;
 
             if(!name || !phone) return alert('برجاء إدخال الاسم ورقم الهاتف');
             if(currentOrderType === 'delivery' && !address) return alert('برجاء إدخال العنوان');
@@ -419,16 +423,14 @@
             let total = (subtotal - discountAmount) + SERVICE_FEE;
             if(currentOrderType === 'delivery') total += DELIVERY_FEE;
 
-            let typeLabel = '';
-            if(currentOrderType === 'delivery') typeLabel = `🛵 توصيل للمنزل (${address})`;
-            else if(currentOrderType === 'dinein') typeLabel = `🍽️ طلب صالة - طاولة رقم: ${tableNum}`;
-            else typeLabel = `🛍️ استلام من المحل`;
+            let typeLabel = currentOrderType === 'delivery' ? `🛵 توصيل للمنزل (${address})` : (currentOrderType === 'dinein' ? `🍽️ طلب صالة - طاولة رقم: ${tableNum}` : `🛍️ استلام من المحل`);
 
             let msg = `🏪 *${SHOP_NAME}*\n`;
             msg += `📄 *رقم الطلب:* ${orderID}\n`;
             msg += `------------------\n`;
             msg += `👤 *العميل:* ${name}\n📱 *الهاتف:* ${phone}\n`;
             msg += `📍 *النوع:* ${typeLabel}\n`;
+            msg += `💳 *طريقة الدفع:* ${payMethod}\n`;
             msg += `------------------\n*الأصناف:*\n`;
             cart.forEach(i => msg += `- ${i.qty} x ${i.name} (${i.optionName}) = ${i.price * i.qty}ج\n`);
             msg += `------------------\n`;
@@ -441,22 +443,69 @@
             cart = []; saveCart(); renderCart(); closeCheckoutModal();
         }
 
-        /* المساعدات العامة */
-        function switchView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); if(id === 'view-menu-order') renderCategories('categoriesView', 'itemsArea', false); if(id === 'view-menu-only') renderCategories('categoriesViewOnly', 'itemsAreaOnly', true); }
-        function renderCategories(cid, aid, ro) { const cont = document.getElementById(cid); const cats = [...new Set(menuItems.map(i => i.category))]; cont.innerHTML = cats.map(c => `<div onclick="showItems('${c}', '${cid}', '${aid}', ${ro})" class="bg-white dark:bg-gray-800 p-2 rounded-xl shadow border theme-border flex flex-col items-center"><img src="${menuItems.find(i=>i.category===c).img}" class="w-full h-24 object-cover rounded-lg mb-2"><span class="font-bold text-sm">${c}</span></div>`).join(''); cont.classList.remove('hidden'); document.getElementById(aid).classList.add('hidden'); }
-        function showItems(cat, cid, aid, ro) { document.getElementById(cid).classList.add('hidden'); document.getElementById(aid).classList.remove('hidden'); const grid = document.getElementById(ro ? 'itemsGridOnly' : 'itemsGrid'); grid.innerHTML = menuItems.filter(i => i.category === cat).map(i => `<div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden flex flex-col border theme-border"><img src="${i.img}" class="w-full h-40 object-cover"><div class="p-3"> <div class="flex justify-between font-bold mb-2"><h4>${i.name}</h4><span class="text-green-600">${i.options[0].price}ج</span></div><p class="text-xs text-gray-400 mb-3">${i.desc}</p>${!ro ? `<button onclick="openOptionModal(${i.id})" class="w-full bg-primary text-white py-2 rounded-lg text-sm">اختيار</button>` : ''}</div></div>`).join(''); }
-        function openOptionModal(id) { itemToProcess = menuItems.find(i => i.id === id); document.getElementById('optionModalTitle').textContent = itemToProcess.name; document.getElementById('itemOptionsContainer').innerHTML = itemToProcess.options.map(o => `<button onclick="selectOption(${o.option_id}, ${o.price})" id="optionBtn_${o.option_id}" class="option-button w-full text-right p-3 rounded-xl flex justify-between"><span>${o.name}</span><b>${o.price}ج</b></button>`).join(''); selectOption(itemToProcess.options[0].option_id, itemToProcess.options[0].price); document.getElementById('optionModal').classList.remove('hidden'); setTimeout(() => { document.getElementById('optionModalPanel').classList.remove('translate-y-full'); }, 10); }
-        function selectOption(oid, p) { selectedOptionId = oid; document.querySelectorAll('.option-button').forEach(b => b.classList.remove('selected')); document.getElementById(`optionBtn_${oid}`).classList.add('selected'); document.getElementById('finalPriceDisplayOptionModal').textContent = `(${p} ج)`; }
-        function confirmAddToCart() { const opt = itemToProcess.options.find(o => o.option_id === selectedOptionId); const cid = `${itemToProcess.id}-${opt.option_id}`; const ex = cart.find(c => c.cartItemId === cid); if(ex) ex.qty++; else cart.push({ cartItemId: cid, name: itemToProcess.name, optionName: opt.name, price: opt.price, qty: 1 }); saveCart(); renderCart(); showToast(); closeOptionModal(); }
-        function updateQty(id, d) { const i = cart.find(c => c.cartItemId === id); if(i) { i.qty += d; if(i.qty <= 0) cart = cart.filter(c => c.cartItemId !== id); saveCart(); renderCart(); } }
+        function switchView(id) {
+            document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            if(id === 'view-menu-order') renderCategories('categoriesView', 'itemsArea', false);
+            if(id === 'view-menu-only') renderCategories('categoriesViewOnly', 'itemsAreaOnly', true);
+        }
+
+        function renderCategories(cid, aid, ro) {
+            const cont = document.getElementById(cid);
+            const cats = [...new Set(menuItems.map(i => i.category))];
+            cont.innerHTML = cats.map(c => `<div onclick="showItems('${c}', '${cid}', '${aid}', ${ro})" class="bg-white dark:bg-gray-800 p-2 rounded-xl shadow border theme-border flex flex-col items-center"><img src="${menuItems.find(i=>i.category===c).img}" class="w-full h-24 object-cover rounded-lg mb-2"><span class="font-bold text-sm">${c}</span></div>`).join('');
+            cont.classList.remove('hidden');
+            document.getElementById(aid).classList.add('hidden');
+        }
+
+        function showItems(cat, cid, aid, ro) {
+            document.getElementById(cid).classList.add('hidden');
+            document.getElementById(aid).classList.remove('hidden');
+            const grid = document.getElementById(ro ? 'itemsGridOnly' : 'itemsGrid');
+            grid.innerHTML = menuItems.filter(i => i.category === cat).map(i => `<div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden flex flex-col border theme-border"><img src="${i.img}" class="w-full h-40 object-cover"><div class="p-3"> <div class="flex justify-between font-bold mb-2"><h4>${i.name}</h4><span class="text-green-600">${i.options[0].price}ج</span></div><p class="text-xs text-gray-400 mb-3">${i.desc}</p>${!ro ? `<button onclick="openOptionModal(${i.id})" class="w-full bg-primary text-white py-2 rounded-lg text-sm">اختيار</button>` : ''}</div></div>`).join('');
+        }
+
+        function openOptionModal(id) {
+            itemToProcess = menuItems.find(i => i.id === id);
+            document.getElementById('optionModalTitle').textContent = itemToProcess.name;
+            document.getElementById('itemOptionsContainer').innerHTML = itemToProcess.options.map(o => `<button onclick="selectOption(${o.option_id}, ${o.price})" id="optionBtn_${o.option_id}" class="option-button w-full text-right p-3 rounded-xl flex justify-between"><span>${o.name}</span><b>${o.price}ج</b></button>`).join('');
+            selectOption(itemToProcess.options[0].option_id, itemToProcess.options[0].price);
+            document.getElementById('optionModal').classList.remove('hidden');
+            setTimeout(() => { document.getElementById('optionModalPanel').classList.remove('translate-y-full'); }, 10);
+        }
+
+        function selectOption(oid, p) {
+            selectedOptionId = oid;
+            document.querySelectorAll('.option-button').forEach(b => b.classList.remove('selected'));
+            document.getElementById(`optionBtn_${oid}`).classList.add('selected');
+            document.getElementById('finalPriceDisplayOptionModal').textContent = `(${p} ج)`;
+        }
+
+        function confirmAddToCart() {
+            const opt = itemToProcess.options.find(o => o.option_id === selectedOptionId);
+            const cartItemId = Date.now().toString();
+            cart.push({ cartItemId, id: itemToProcess.id, name: itemToProcess.name, optionName: opt.name, price: opt.price, qty: 1 });
+            saveCart(); renderCart(); closeOptionModal(); showToast('تمت الإضافة للسلة');
+        }
+
+        function updateQty(id, delta) {
+            const idx = cart.findIndex(i => i.cartItemId === id);
+            if(idx > -1) {
+                cart[idx].qty += delta;
+                if(cart[idx].qty < 1) cart.splice(idx, 1);
+                saveCart(); renderCart();
+            }
+        }
+
+        function clearCart() { if(confirm('هل تريد مسح السلة؟')) { cart = []; saveCart(); renderCart(); } }
         function saveCart() { localStorage.setItem('NOUR MENU_cart', JSON.stringify(cart)); }
-        function showToast(m = 'تمت الإضافة ✅') { const t = document.getElementById('toast'); t.textContent = m; t.style.opacity = '1'; t.style.transform = 'translate(-50%, 0)'; setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, -20px)'; }, 2000); }
-        function openCheckoutModal() { document.getElementById('checkoutModal').classList.remove('hidden'); setTimeout(() => { document.getElementById('modalPanel').classList.remove('translate-y-full'); }, 10); }
+        function showToast(m) { const t = document.getElementById('toast'); t.textContent = m; t.style.opacity = '1'; t.style.transform = 'translate(-50%, 0)'; setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, -20px)'; }, 2000); }
+        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); localStorage.setItem('theme', isDark ? 'dark' : 'light'); document.getElementById('darkIcon').textContent = isDark ? '☀️' : '🌙'; }
+        function openCheckoutModal() { document.getElementById('checkoutModal').classList.remove('hidden'); setTimeout(() => { document.getElementById('modalPanel').classList.remove('translate-y-full'); }, 10); renderCart(); }
         function closeCheckoutModal() { document.getElementById('modalPanel').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('checkoutModal').classList.add('hidden'); }, 300); }
         function closeOptionModal() { document.getElementById('optionModalPanel').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('optionModal').classList.add('hidden'); }, 300); }
         function backToCategories() { document.getElementById('itemsArea').classList.add('hidden'); document.getElementById('categoriesView').classList.remove('hidden'); }
-        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); }
-        function clearCart() { if(confirm('مسح السلة؟')){ cart=[]; saveCart(); renderCart(); closeCheckoutModal(); } }
+        function backToCategoriesOnly() { document.getElementById('itemsAreaOnly').classList.add('hidden'); document.getElementById('categoriesViewOnly').classList.remove('hidden'); }
     </script>
 </body>
 </html>
