@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NOUR Menu — المنيو الإلكتروني</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#528d55',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        body {
+            font-family: 'Cairo', 'Inter', sans-serif;
+            overflow-x: hidden;
+            background: var(--bg-menu); 
+            transition: background-color 0.3s ease, color 0.3s ease;
+            touch-action: manipulation;
+        }
+
+        #app-splash {
+            position: fixed; inset: 0; background-color: #fff7ed; z-index: 99999;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease-out;
+        }
+        .splash-logo-container {
+            width: 120px; height: 120px; background: white; border-radius: 25px; padding: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 20px;
+            display: flex; align-items: center; justify-content: center;
+            animation: pulseLogo 2s infinite;
+        }
+        @keyframes pulseLogo { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+        .loading-bar-container {
+            width: 150px; height: 4px; background: #fed7aa; border-radius: 10px; overflow: hidden; margin-top: 15px; position: relative;
+        }
+        .loading-bar {
+            width: 50%; height: 100%; background: #ea580c; position: absolute; left: -50%;
+            animation: loadMove 1.5s infinite linear;
+        }
+        @keyframes loadMove { 0% { left: -50%; } 100% { left: 150%; } }
+
+        :root {
+            --bg-menu: #f9fafb; --card-bg: #ffffff; --glass: rgba(255, 255, 255, 0.9); 
+            --header-color: #431407; --text-color: #1f2937; --muted: #6b7280; --border-color: #e5e7eb;
+        }
+        html.dark :root {
+            --bg-menu: #0f172a; --card-bg: #1e293b; --glass: rgba(30, 41, 59, 0.95);
+            --header-color: #f3f4f6; --text-color: #e2e8f0; --muted: #94a3b8; --border-color: #374151;
+        }
+        
+        .theme-bg { background-color: var(--bg-menu); }
+        .theme-text-header { color: var(--header-color); }
+        .theme-text-body { color: var(--text-color); }
+        .theme-border { border-color: var(--border-color); }
+
+        .glass { background: var(--glass); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border-color); }
+        .items-carousel { display: grid; gap: 1rem; padding-bottom: 6rem; }
+        .items-carousel { grid-template-columns: 1fr; }
+        @media(min-width: 640px) { .items-carousel { grid-template-columns: repeat(2, 1fr); } }
+        @media(min-width: 1024px) { .items-carousel { grid-template-columns: repeat(3, 1fr); } }
+
+        .view-section { display: none; min-height: 100vh; padding-bottom: 80px; }
+        .view-section.active { display: block; animation: fadeInView 0.4s ease-out; }
+        @keyframes fadeInView { from { opacity: 0; } to { opacity: 1; } }
+
+        .btn-add:active { transform: scale(0.95); }
+        .option-button { transition: all 0.2s; border: 2px solid var(--border-color); }
+        .option-button.selected { border-color: #528d55; background-color: #ecfdf5; }
+        html.dark .option-button.selected { background-color: #064e3b; }
+    </style>
+</head>
+<body class="text-gray-800" id="pageRoot">
+
+    <div id="app-splash">
+        <div class="splash-logo-container">
+            <img src="https://nour2030.neocities.org/NOUR%20Menu/Nour%20Menu.png" alt="Logo" style="width:100%; height:100%; object-fit:contain; border-radius:15px;">
+        </div>
+        <h1 class="text-3xl font-black text-gray-800 mb-2">NOUR MENU</h1>
+        <p class="text-sm text-gray-500 font-medium">جاري تحميل القائمة...</p>
+        <div class="loading-bar-container"><div class="loading-bar"></div></div>
+    </div>
+
+    <div id="view-landing" class="view-section active">
+        <div class="flex items-center justify-center min-h-screen p-4 bg-orange-50/50">
+            <div class="w-full max-w-md bg-white shadow-2xl rounded-3xl overflow-hidden border border-orange-100 relative">
+                <div class="absolute top-4 left-4 z-10 bg-red-600 text-white px-3 py-1 rounded-full text-sm font-bold shadow animate-bounce">جديد! 🔥</div>
+                <div class="h-64 relative">
+                    <img src="https://nour2030.neocities.org/NOUR%20Menu/Nour%20Menu.png" class="w-full h-full object-cover">
+                    <div class="absolute bottom-0 inset-x-0 h-24 bg-gradient-to-t from-white to-transparent"></div>
+                </div>
+                <div class="px-6 pb-8 -mt-10 relative z-10">
+                    <div class="flex justify-center mb-4">
+                        <div class="bg-white p-2 rounded-2xl shadow-lg border border-orange-100 w-24 h-24 flex items-center justify-center">
+                            <img src="https://nour2030.neocities.org/NOUR%20Menu/Nour%20Menu.png" class="w-full h-full object-contain rounded-lg">
+                        </div>
+                    </div>
+                    <div class="text-center mb-8">
+                        <h1 class="text-2xl font-black text-gray-800 mb-2">NOUR MENU</h1>
+                        <p class="text-gray-600">اطلب أكلك المفضل ويوصلك لحد باب البيت 🍔🏠</p>
+                    </div>
+                    <div class="space-y-3">
+                        <button onclick="switchView('view-menu-order')" class="w-full bg-red-600 hover:bg-red-700 active:bg-red-800 text-white font-bold py-4 rounded-xl shadow-lg flex items-center justify-center gap-2 transition-transform active:scale-95">
+                            <span>اطلب الآن</span> <i class="fas fa-motorcycle"></i>
+                        </button>
+                        <button onclick="switchView('view-menu-only')" class="w-full bg-white border-2 border-orange-200 text-orange-600 hover:bg-orange-50 font-bold py-3 rounded-xl transition-colors">
+                            تصفح المنيو فقط
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="view-menu-order" class="view-section">
+        <header class="fixed top-0 inset-x-0 z-40 glass px-4 py-3">
+            <div class="max-w-4xl mx-auto flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="https://nour2030.neocities.org/NOUR%20Menu/Nour%20Menu.png" class="w-10 h-10 rounded-lg border border-gray-200">
+                    <div>
+                        <h2 class="font-bold text-sm theme-text-header">NOUR MENU</h2>
+                        <p class="text-[10px] theme-text-body opacity-70">طلب أونلاين</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleDarkMode()" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 text-lg transition-colors">
+                        <span id="darkIcon">🌙</span>
+                    </button>
+                    <button onclick="switchView('view-landing')" class="w-9 h-9 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700 theme-text-header text-sm">
+                        <i class="fas fa-home"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto mt-20 px-4">
+            <div id="categoriesView" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-24"></div>
+            <div id="itemsArea" class="hidden pb-24">
+                <div class="sticky top-[65px] z-30 bg-white/95 dark:bg-gray-900/95 backdrop-blur py-2 mb-4 border-b theme-border flex items-center gap-2">
+                    <button onclick="backToCategories()" class="bg-gray-100 dark:bg-gray-700 theme-text-header px-3 py-1.5 rounded-lg text-sm font-bold">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <h3 id="sectionTitle" class="font-bold theme-text-header text-lg flex-1">الأصناف</h3>
+                </div>
+                <div id="itemsGrid" class="items-carousel"></div>
+            </div>
+        </main>
+
+        <div id="miniCart" onclick="openCheckoutModal()" class="fixed bottom-4 left-4 right-4 bg-gray-900 dark:bg-pink-600 text-white p-4 rounded-xl shadow-2xl z-50 flex items-center justify-between cursor-pointer transform translate-y-24 transition-transform duration-300">
+            <div class="flex items-center gap-3">
+                <div class="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center font-bold" id="miniCartCount">0</div>
+                <div class="flex flex-col">
+                    <span class="text-xs text-gray-300">الإجمالي</span>
+                    <span class="font-bold text-lg" id="miniCartTotal">0 ج</span>
+                </div>
+            </div>
+            <button class="bg-white text-gray-900 px-4 py-2 rounded-lg text-sm font-bold shadow">
+                إتمام الطلب <i class="fas fa-arrow-left mr-1"></i>
+            </button>
+        </div>
+    </div>
+
+    <div id="view-menu-only" class="view-section">
+        <header class="fixed top-0 inset-x-0 z-40 glass px-4 py-3">
+            <div class="max-w-4xl mx-auto flex items-center justify-between">
+                <h2 class="font-bold theme-text-header">القائمة</h2>
+                <div class="flex gap-2">
+                    <button onclick="toggleDarkMode()" class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 text-sm">🌙</button>
+                    <button onclick="switchView('view-landing')" class="px-3 py-1 rounded bg-gray-100 dark:bg-gray-700 text-sm">🏠</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-4xl mx-auto mt-20 px-4 pb-10">
+            <div id="categoriesViewOnly" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+            <div id="itemsAreaOnly" class="hidden">
+                <button onclick="backToCategoriesOnly()" class="mb-4 bg-gray-200 dark:bg-gray-700 theme-text-header px-4 py-2 rounded-lg text-sm">رجوع</button>
+                <div id="itemsGridOnly" class="items-carousel"></div>
+            </div>
+        </main>
+    </div>
+
+    <div id="optionModal" class="fixed inset-0 z-[101] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeOptionModal()"></div>
+        <div class="absolute inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 bg-white dark:bg-gray-800 sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[90vh] overflow-y-auto w-full sm:max-w-md transition-transform duration-300 transform translate-y-full sm:translate-y-0" id="optionModalPanel">
+            <div class="bg-[#6b3e26] dark:bg-pink-600 text-white p-4 flex items-center justify-between sticky top-0 z-10">
+                <h3 class="font-bold text-lg" id="optionModalTitle">اختر الخيارات</h3>
+                <button onclick="closeOptionModal()" class="text-white/80 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+            <div class="p-5 space-y-4">
+                <p id="optionModalDesc" class="text-sm text-gray-600 dark:text-gray-400"></p>
+                <div id="itemOptionsContainer" class="space-y-4"></div>
+                <button onclick="confirmAddToCart()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl transition-colors flex items-center justify-center gap-2">
+                    إضافة للسلة <span id="finalPriceDisplayOptionModal"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="checkoutModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeCheckoutModal()"></div>
+        <div class="absolute inset-x-0 bottom-0 sm:inset-auto sm:top-1/2 sm:left-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 bg-white dark:bg-gray-800 sm:rounded-2xl rounded-t-2xl shadow-2xl max-h-[90vh] overflow-y-auto w-full sm:max-w-md transition-transform duration-300 transform translate-y-full sm:translate-y-0" id="modalPanel">
+            
+            <div class="bg-[#6b3e26] dark:bg-pink-600 text-white p-4 flex items-center justify-between sticky top-0 z-10">
+                <h3 class="font-bold text-lg">بيانات الطلب والدفع</h3>
+                <button onclick="closeCheckoutModal()" class="text-white/80 hover:text-white text-2xl font-bold">&times;</button>
+            </div>
+
+            <div class="p-5 space-y-6">
+                <div id="cartList" class="space-y-3 min-h-[50px] max-h-[150px] overflow-y-auto bg-gray-50 dark:bg-gray-900/50 p-2 rounded-lg"></div>
+
+                <div class="bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl border border-blue-200 dark:border-blue-800">
+                    <label class="block text-xs font-bold text-blue-700 dark:text-blue-300 mb-2">هل لديك كود خصم؟</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="couponInput" placeholder="أدخل الكود هنا" class="flex-1 border border-blue-300 p-2 rounded-lg text-sm bg-white dark:bg-gray-700 outline-none">
+                        <button onclick="applyCoupon()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold">تطبيق</button>
+                    </div>
+                    <p id="couponMsg" class="text-[10px] mt-1 font-bold"></p>
+                </div>
+
+                <div id="clearCartContainer">
+                    <button onclick="clearCart()" class="w-full bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 font-bold py-2 rounded-lg text-sm border border-red-300 dark:border-red-800 hover:bg-red-200 transition-colors">
+                        <i class="fas fa-trash-alt ml-2"></i> مسح السلة بالكامل
+                    </button>
+                </div>
+
+                <fieldset class="border border-gray-200 dark:border-gray-700 p-4 rounded-xl space-y-4">
+                    <legend class="text-base font-bold text-[var(--header-color)] px-2 theme-text-header">معلومات العميل</legend>
+                    <input type="text" id="popName" placeholder="الاسم ثلاثي*" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
+                    <input type="tel" id="popPhone" placeholder="رقم الهاتف للتواصل*" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
+                </fieldset>
+                
+                <fieldset class="border border-gray-200 dark:border-gray-700 p-4 rounded-xl space-y-3">
+                    <legend class="text-base font-bold text-[var(--header-color)] px-2 theme-text-header">نوع الطلب</legend>
+                    <div class="space-y-2">
+                        <label class="flex items-center gap-3 cursor-pointer p-2 rounded">
+                            <input type="radio" name="payment_method" value="توصيل الطلب" checked class="w-5 h-5 accent-green-600">
+                            <span class="theme-text-body font-medium">توصيل الطلب للمنزل (15 ج)</span>
+                        </label>
+                        <label class="flex items-center gap-3 cursor-pointer p-2 rounded">
+                            <input type="radio" name="payment_method" value="استلام الطلب من المحل" class="w-5 h-5 accent-green-600">
+                            <span class="theme-text-body font-medium">استلام الطلب من المحل (مجاني)</span>
+                        </label>
+                    </div>
+                    <div id="addressFields">
+                        <input type="text" id="popAddress" placeholder="العنوان بالتفصيل" class="w-full border border-gray-300 p-3 rounded-lg text-sm bg-white dark:bg-gray-700 dark:border-gray-600 dark:text-white outline-none">
+                    </div>
+                </fieldset>
+
+                <div class="bg-gray-100 dark:bg-gray-700 p-4 rounded-xl border theme-border space-y-2 text-sm">
+                    <div class="flex justify-between"><span>المجموع:</span> <span id="subTotalDisplay">0 ج</span></div>
+                    <div id="discountDisplay" class="flex justify-between text-blue-600 font-bold hidden"><span>الخصم:</span> <span id="discountVal">0 ج</span></div>
+                    <div id="deliveryFeeDisplay" class="flex justify-between text-red-500"><span>التوصيل:</span> <span>15 ج</span></div>
+                    <div class="flex justify-between border-t theme-border pt-2 font-extrabold text-lg">
+                        <span>الإجمالي:</span> <span id="modalFinalTotal" class="text-red-600">0 ج</span>
+                    </div>
+                </div>
+
+                <button onclick="processOrder()" class="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl font-bold text-lg shadow-xl flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp text-2xl"></i> إرسال الطلب
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 bg-gray-800 text-white px-6 py-3 rounded-full shadow-xl z-[150] transition-all duration-300 opacity-0 pointer-events-none translate-y-[-20px] text-sm font-bold">تمت الإضافة ✅</div>
+
+    <script>
+        const SHOP_NUMBER = '201224268026';
+        const ADMIN_EMAIL = 'Haythamnour0@GMAIL.COM';
+        const DELIVERY_FEE = 15;
+        const SERVICE_FEE = 1;
+        
+        let currentOrderType = 'delivery';
+        let cart = JSON.parse(localStorage.getItem('NOUR MENU_cart')) || [];
+        let itemToProcess = null;
+        let discountPercent = 0;
+        let appliedCoupon = '';
+
+        const menuItems = [
+            { id: 101, name: "مناقيش زعتر", desc: "زعتر وزيت زيتون فاخر", category:"فطائر", img: "https://nour2030.neocities.org/NOUR%20Menu/mn2esh.jpg", options: [{ option_id: 1, name: "صغير", price: 30 }, { option_id: 2, name: "كبير", price: 45 }] },
+            { id: 201, name: "كريب نوتيلا", desc: "شوكولاتة نوتيلا وموز", category:"حلويات", img: "https://nour2030.neocities.org/NOUR%20Menu/nutella.jpg", options: [{ option_id: 1, name: "عادي", price: 50 }, { option_id: 2, name: "كبير", price: 70 }] },
+            { id: 202, name: "كريب موتزاريلا", desc: "جبنه بالخضار", category:"حلويات", img: "https://nour2030.neocities.org/NOUR%20Menu/motzarela.jpg", options: [{ option_id: 1, name: "صغير", price: 50 }, { option_id: 2, name: "كبير", price: 70 }] },
+            { id: 203, name: "كريب سحق", desc: "شوكولاتة سجق ", category:"حلويات", img: "https://nour2030.neocities.org/NOUR%20Menu/sogog.jpg", options: [{ option_id: 1, name: "عادي", price: 50 }, { option_id: 2, name: "كبير", price: 70 }] },
+            { id: 301, name: "برجر كلاسيك", desc: "لحم بلدي 150 جرام", category:"برجر", img: "https://nour2030.neocities.org/Menu/%D8%A8%D8%B1%D8%AC%D8%B1%20%D9%83%D9%84%D8%A7%D8%B3%D9%8A%D9%83.jpg", options: [ { option_id: 1, name: "برجر 150 جرام", price: 60 } ] },
+            { id: 302, name: "برجر الاسطوره", desc: "لحم بلدي 200 جرام", category:"برجر", img: "https://nour2030.neocities.org/NOUR%20Menu/Oman_Egypt-Ranch-Chicken-PR-scaled.jpg", options: [{ option_id: 1, name: "عادي", price: 50 }, { option_id: 2, name: "كبير", price: 70 }] },
+            { id: 501, name: "وجبة كفتة", desc: "أرز وسلطة وطحينة", category:"وجبات", img: "https://nour2030.neocities.org/NOUR%20Menu/kofta.jpeg", options: [{ option_id: 1, name: "3 قطع", price: 40 }, { option_id: 2, name: "5 قطع", price: 65 }] },
+            { id: 401, name: "قهوة تركي", desc: "بن محوج فاخر", category:"مشروبات", img: "https://nour2030.neocities.org/Menu/%D9%82%D9%87%D9%88%D9%87%20%D8%AA%D8%B1%D9%83%D9%8A.jpg", options: [{ option_id: 1, name: "سادة", price: 15 }, { option_id: 2, name: "مظبوط", price: 15 }, { option_id: 3, name: "زيادة", price: 15 }] }
+        ];
+
+        window.onload = () => {
+            if(localStorage.getItem('theme') === 'dark') document.documentElement.classList.add('dark');
+            setTimeout(() => { document.getElementById('app-splash').style.opacity = '0'; setTimeout(() => { document.getElementById('app-splash').style.display = 'none'; }, 500); }, 2000);
+            renderCart();
+            document.querySelectorAll('input[name="payment_method"]').forEach(r => {
+                r.addEventListener('change', e => {
+                    currentOrderType = (e.target.value === 'توصيل الطلب') ? 'delivery' : 'pickup';
+                    document.getElementById('addressFields').classList.toggle('hidden', currentOrderType !== 'delivery');
+                    renderCart();
+                });
+            });
+        };
+
+        function applyCoupon() {
+            const input = document.getElementById('couponInput').value.trim().toLowerCase();
+            const msg = document.getElementById('couponMsg');
+            
+            if(input === 'haytham') {
+                discountPercent = 0.10; // 10%
+                appliedCoupon = 'haytham';
+                msg.textContent = "تم تطبيق خصم 10% ✅";
+                msg.className = "text-[10px] mt-1 font-bold text-green-600";
+                showToast("مبروك! حصلت على خصم 10%");
+            } else {
+                discountPercent = 0;
+                appliedCoupon = '';
+                msg.textContent = "كود غير صحيح ❌";
+                msg.className = "text-[10px] mt-1 font-bold text-red-600";
+            }
+            renderCart();
+        }
+
+        function renderCart() {
+            const subtotal = cart.reduce((a,b) => a + (b.price * b.qty), 0);
+            const discountAmount = Math.round(subtotal * discountPercent);
+            let total = (subtotal - discountAmount) + SERVICE_FEE;
+            if (currentOrderType === 'delivery') total += DELIVERY_FEE;
+
+            const miniCart = document.getElementById('miniCart');
+            if(cart.length > 0) miniCart.classList.remove('translate-y-24'); else miniCart.classList.add('translate-y-24');
+            document.getElementById('miniCartCount').textContent = cart.reduce((a,b) => a + b.qty, 0);
+            document.getElementById('miniCartTotal').textContent = total + ' ج';
+
+            const list = document.getElementById('cartList');
+            list.innerHTML = cart.length === 0 ? '<div class="text-center py-4 text-gray-400">السلة فارغة</div>' : 
+                cart.map(item => `
+                    <div class="flex items-center justify-between bg-white dark:bg-gray-700/50 p-2 rounded-lg border theme-border">
+                        <div class="text-sm font-bold theme-text-header">${item.name} <span class="text-xs text-gray-400 block">${item.optionName}</span></div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="updateQty('${item.cartItemId}', -1)" class="w-6 h-6 bg-gray-200 dark:bg-gray-600 rounded">-</button>
+                            <span class="font-bold w-4 text-center">${item.qty}</span>
+                            <button onclick="updateQty('${item.cartItemId}', 1)" class="w-6 h-6 bg-green-100 text-green-700 rounded">+</button>
+                        </div>
+                        <div class="text-sm font-bold">${item.price * item.qty} ج</div>
+                    </div>`).join('');
+
+            document.getElementById('subTotalDisplay').textContent = subtotal + ' ج';
+            document.getElementById('modalFinalTotal').textContent = total + ' ج';
+            
+            const discEl = document.getElementById('discountDisplay');
+            if(discountAmount > 0) {
+                discEl.classList.remove('hidden');
+                document.getElementById('discountVal').textContent = `- ${discountAmount} ج`;
+            } else {
+                discEl.classList.add('hidden');
+            }
+            document.getElementById('deliveryFeeDisplay').classList.toggle('hidden', currentOrderType !== 'delivery');
+        }
+
+        function processOrder() {
+            const name = document.getElementById('popName').value.trim();
+            const phone = document.getElementById('popPhone').value.trim();
+            const address = document.getElementById('popAddress').value.trim();
+            if(!name || !phone || (currentOrderType === 'delivery' && !address)) return alert('برجاء إكمال البيانات');
+
+            const subtotal = cart.reduce((a,b)=>a+(b.price*b.qty),0);
+            const discountAmount = Math.round(subtotal * discountPercent);
+            let total = (subtotal - discountAmount) + SERVICE_FEE;
+            if(currentOrderType === 'delivery') total += DELIVERY_FEE;
+
+            let msg = `📋 *طلب جديد*\n`;
+            msg += `👤 *العميل:* ${name}\n📱 *الهاتف:* ${phone}\n`;
+            msg += `🛵 *النوع:* ${currentOrderType === 'delivery' ? 'توصيل ('+address+')' : 'استلام من المحل'}\n`;
+            msg += `------------------\n*الطلبات:*\n`;
+            cart.forEach(i => msg += `- ${i.qty} x ${i.name} (${i.optionName}) = ${i.price * i.qty}ج\n`);
+            msg += `------------------\n`;
+            msg += `*المجموع:* ${subtotal} ج\n`;
+            if(discountAmount > 0) msg += `*كود الخصم (${appliedCoupon}):* -${discountAmount} ج (10%)\n`;
+            if(currentOrderType === 'delivery') msg += `*التوصيل:* ${DELIVERY_FEE} ج\n`;
+            msg += `*الإجمالي النهائي:* ${total} ج`;
+
+            window.open(`https://wa.me/${SHOP_NUMBER}?text=${encodeURIComponent(msg)}`, '_blank');
+            cart = []; saveCart(); renderCart(); closeCheckoutModal();
+        }
+
+        /* المساعدات العامة */
+        function switchView(id) { document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); if(id === 'view-menu-order') renderCategories('categoriesView', 'itemsArea', false); if(id === 'view-menu-only') renderCategories('categoriesViewOnly', 'itemsAreaOnly', true); }
+        function renderCategories(cid, aid, ro) { const cont = document.getElementById(cid); const cats = [...new Set(menuItems.map(i => i.category))]; cont.innerHTML = cats.map(c => `<div onclick="showItems('${c}', '${cid}', '${aid}', ${ro})" class="bg-white dark:bg-gray-800 p-2 rounded-xl shadow border theme-border flex flex-col items-center"><img src="${menuItems.find(i=>i.category===c).img}" class="w-full h-24 object-cover rounded-lg mb-2"><span class="font-bold text-sm">${c}</span></div>`).join(''); cont.classList.remove('hidden'); document.getElementById(aid).classList.add('hidden'); }
+        function showItems(cat, cid, aid, ro) { document.getElementById(cid).classList.add('hidden'); document.getElementById(aid).classList.remove('hidden'); const grid = document.getElementById(ro ? 'itemsGridOnly' : 'itemsGrid'); grid.innerHTML = menuItems.filter(i => i.category === cat).map(i => `<div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden flex flex-col border theme-border"><img src="${i.img}" class="w-full h-40 object-cover"><div class="p-3"> <div class="flex justify-between font-bold mb-2"><h4>${i.name}</h4><span class="text-green-600">${i.options[0].price}ج</span></div><p class="text-xs text-gray-400 mb-3">${i.desc}</p>${!ro ? `<button onclick="openOptionModal(${i.id})" class="w-full bg-primary text-white py-2 rounded-lg text-sm">اختيار</button>` : ''}</div></div>`).join(''); }
+        function openOptionModal(id) { itemToProcess = menuItems.find(i => i.id === id); document.getElementById('optionModalTitle').textContent = itemToProcess.name; document.getElementById('itemOptionsContainer').innerHTML = itemToProcess.options.map(o => `<button onclick="selectOption(${o.option_id}, ${o.price})" id="optionBtn_${o.option_id}" class="option-button w-full text-right p-3 rounded-xl flex justify-between"><span>${o.name}</span><b>${o.price}ج</b></button>`).join(''); selectOption(itemToProcess.options[0].option_id, itemToProcess.options[0].price); document.getElementById('optionModal').classList.remove('hidden'); setTimeout(() => { document.getElementById('optionModalPanel').classList.remove('translate-y-full'); }, 10); }
+        function selectOption(oid, p) { selectedOptionId = oid; document.querySelectorAll('.option-button').forEach(b => b.classList.remove('selected')); document.getElementById(`optionBtn_${oid}`).classList.add('selected'); document.getElementById('finalPriceDisplayOptionModal').textContent = `(${p} ج)`; }
+        function confirmAddToCart() { const opt = itemToProcess.options.find(o => o.option_id === selectedOptionId); const cid = `${itemToProcess.id}-${opt.option_id}`; const ex = cart.find(c => c.cartItemId === cid); if(ex) ex.qty++; else cart.push({ cartItemId: cid, name: itemToProcess.name, optionName: opt.name, price: opt.price, qty: 1 }); saveCart(); renderCart(); showToast(); closeOptionModal(); }
+        function updateQty(id, d) { const i = cart.find(c => c.cartItemId === id); if(i) { i.qty += d; if(i.qty <= 0) cart = cart.filter(c => c.cartItemId !== id); saveCart(); renderCart(); } }
+        function saveCart() { localStorage.setItem('NOUR MENU_cart', JSON.stringify(cart)); }
+        function showToast(m = 'تمت الإضافة ✅') { const t = document.getElementById('toast'); t.textContent = m; t.style.opacity = '1'; t.style.transform = 'translate(-50%, 0)'; setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, -20px)'; }, 2000); }
+        function openCheckoutModal() { document.getElementById('checkoutModal').classList.remove('hidden'); setTimeout(() => { document.getElementById('modalPanel').classList.remove('translate-y-full'); }, 10); }
+        function closeCheckoutModal() { document.getElementById('modalPanel').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('checkoutModal').classList.add('hidden'); }, 300); }
+        function closeOptionModal() { document.getElementById('optionModalPanel').classList.add('translate-y-full'); setTimeout(() => { document.getElementById('optionModal').classList.add('hidden'); }, 300); }
+        function backToCategories() { document.getElementById('itemsArea').classList.add('hidden'); document.getElementById('categoriesView').classList.remove('hidden'); }
+        function toggleDarkMode() { document.documentElement.classList.toggle('dark'); localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light'); }
+        function clearCart() { if(confirm('مسح السلة؟')){ cart=[]; saveCart(); renderCart(); closeCheckoutModal(); } }
+    </script>
+</body>
+</html>
