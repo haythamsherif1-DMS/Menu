@@ -1,0 +1,21 @@
+{
+  "name": "مطعم نور - المنيو الذكي",
+  "short_name": "منيو نور",
+  "description": "اطلب أفضل الأكلات المصرية من مطعم نور",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ef4444",
+  "icons": [
+    {
+      "src": "https://nour2030.neocities.org/NOUR%20Menu/Nour%20Menu.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://nour2030.neocities.org/NOUR%20Menu/Nour%20Menu.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
