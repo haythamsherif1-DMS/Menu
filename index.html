@@ -11,19 +11,65 @@
 
     <style>
         body, html { margin: 0; padding: 0; height: 100%; overflow: hidden; background-color: #ffffff; }
+        
+        /* شاشة التحميل السريعة */
+        #loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .mention-god {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ef4444; /* لون مطعم نور */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            animation: pulse 1.5s infinite; /* حركة نبض خفيفة */
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.6; }
+            50% { opacity: 1; }
+            100% { opacity: 0.6; }
+        }
+
         iframe {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
             border: none;
+            visibility: hidden; /* مخفي حتى يكتمل التحميل */
         }
     </style>
 </head>
 <body>
 
-    <iframe src="https://script.google.com/macros/s/AKfycbya-YX0f0ua7ax21c8JN_rSmzXJN2WFg45H9Km8pY4DW0WrUVYP2KyZuWphkn_hrCR1/exec"></iframe>
+    <div id="loader">
+        <div class="mention-god">اذكر الله</div>
+    </div>
+
+    <iframe 
+        id="menuFrame"
+        src="https://script.google.com/macros/s/AKfycbya-YX0f0ua7ax21c8JN_rSmzXJN2WFg45H9Km8pY4DW0WrUVYP2KyZuWphkn_hrCR1/exec"
+        onload="showMenu()">
+    </iframe>
 
     <script>
-        // تسجيل الـ Service Worker لتفعيل خاصية التثبيت كأبلكيشن
+        function showMenu() {
+            // إخفاء شاشة التحميل فوراً
+            document.getElementById('loader').style.display = 'none';
+            // إظهار المنيو فوراً
+            document.getElementById('menuFrame').style.visibility = 'visible';
+        }
+
+        // تسجيل الـ Service Worker
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js')
             .then(() => console.log('Service Worker Registered'));
