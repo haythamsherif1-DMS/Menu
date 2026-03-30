@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nour-menu-v1.04';
+const CACHE_NAME = 'nour-menu-v1.05';
 const assets = ['/'];
 
 self.addEventListener('install', e => {
